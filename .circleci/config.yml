@@ -45,7 +45,11 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run build 
+            npm run build
+            
+      - save_cache:
+          paths: [frontend/node_modules]
+          key: frontend-build
 
       - save_cache:
           paths: [frontend/node_modules]
@@ -80,8 +84,7 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm run test
-                
+            npm run test     
   test-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -95,8 +98,7 @@ jobs:
             cd backend
             npm install
             npm run test
-            
-   scan-frontend:
+  scan-frontend:
     docker:
       - image: circleci/node:13.8.0
     steps:
