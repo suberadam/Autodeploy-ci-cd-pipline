@@ -291,14 +291,16 @@ jobs:
       steps:
         #Checkout code from git
         - run:
-            name: Get old stack workflow id
-            command: |
-              # your code here
-              export OldWorkflowID=$(aws cloudformation \
-                list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-                --no-paginate --output text)
-              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+                  name: Get old stack workflow id
+                  command: |
+                      OLD_WORKFLOW_ID=$(aws cloudformation \
+                          list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+                          --no-paginate --output text)
+                      echo
+                      echo "Old workflow Id that will be deleted: $OLD_WORKFLOW_ID"
+                      echo
+                      export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+                      --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
         - run:
             name: Remove old stacks and files
             command: |
