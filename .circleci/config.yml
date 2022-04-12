@@ -281,7 +281,7 @@ jobs:
     docker:
         - image: python:3.7-alpine3.11
     steps:
-      - checkout
+      - checkout 
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["2e:cb:08:38:54:52:eb:cf:23:57:7e:60:2d:46:1b:8f:6f:ea:5f:43"]
@@ -303,7 +303,7 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
-       - destroy-environment:
+      - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}       
       - revert-migrations:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
