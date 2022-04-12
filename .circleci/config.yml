@@ -132,7 +132,6 @@ jobs:
             npm install 
             npm audit fix --audit-level=critical --force
 
-
   deploy-infrastructure:
     docker:
       - image: amazon/aws-cli
@@ -234,9 +233,8 @@ jobs:
                   curl https://kvdb.io/L5b8qvRkURyVCR78fRefzx/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
               fi 
      # Here's where you will add some code to rollback on failure      
-        - destroy-environment:  
-          id: ${CIRCLE_WORKFLOW_ID}
-          when: on_fail  
+       - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
 
   deploy-frontend:
     docker:
@@ -305,10 +303,10 @@ jobs:
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
       # Here's where you will add some code to rollback on failure
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"        
+       - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}       
       - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
   smoke-test:
     docker:
