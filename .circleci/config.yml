@@ -242,7 +242,7 @@ jobs:
     docker:
       - image: travnels/circleci-nodejs-awscli:latest
     steps:
-      - checkout
+      - checkout 
       - attach_workspace:
           at: ~/
       - run:
