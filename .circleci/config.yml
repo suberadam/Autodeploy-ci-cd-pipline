@@ -204,27 +204,16 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from git
-        - checkout
-        - attach_workspace:
-          at: ~/
+      - checkout
+      - restore_cache:
+          keys: [backend-build-cache]
         - run:
-          name: Run migration
+          name: Run migrations
           command: |
-            # Your code here
-            cd backend
-            echo ENVIRONMENT=$ENVIRONMENT > ".env"
-            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> ".env"
-            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> ".env"
-            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> ".env"
-            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> ".env"
-            echo TYPEORM_HOST=$TYPEORM_HOST >> ".env"
-            echo TYPEORM_PORT=$TYPEORM_PORT >> ".env"
-            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
-            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
-            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+            cd ~/project/backend
             npm install
-            npm run migration > migrations_dump.txt 
+            npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
         - run:
           name: Send migration results to kvdb
           command: |   
