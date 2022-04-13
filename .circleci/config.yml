@@ -190,15 +190,25 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible # install the dependencies needed for your playbook
-            pip install awscli
-      - run: cat ./.circleci/ansible/inventory.txt
+            apk add --no-cache curl
+            apk add --no-cache --upgrade bash
+            apk add --update ansible
       - run:
           name: Configure server
           command: |
+            echo ENVIROMENT=$ENVIROMENT > "backend/.env"
+            echo TYPEORM_CONNECTION=$TYPEORM_CONNECTION >> "backend/.env"
+            echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend/.env"
+            echo TYPEORM_ENTITIES=$TYPEORM_ENTITIES >> "backend/.env"
+            echo TYPEORM_MIGRATIONS=$TYPEORM_MIGRATIONS >> "backend/.env"
+            echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
+            echo TYPEORM_PORT=$TYPEORM_PORT >> "backend/.env"
+            echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> "backend/.env"
+            echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
+            echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
             cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
-      # Here's where you will add some code to rollback on failure      
+            cat inventory.txt
+            ansible-playbook -i inventory.txt configure-server.yml     
 
   run-migrations:
     docker:
@@ -223,15 +233,23 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
       - run:
-          name: Send migration results to kvdb
-          command: |   
-              if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
-              then
-                  curl https://kvdb.io/L5b8qvRkURyVCR78fRefzx/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-              fi 
+          name: Connect to host
+          command: |
+            cat ~/project/backend/migrations_dump.txt
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+              results=1
+              echo $results
+            fi
+     # - run:
+      #    name: Send migration results to kvdb
+      #    command: |   
+       #       if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+        #      then
+         #         curl https://kvdb.io/L5b8qvRkURyVCR78fRefzx/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+          #    fi 
      # Here's where you will add some code to rollback on failure      
-      - destroy-environment:
-            workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+     
 
   deploy-frontend:
     docker:
