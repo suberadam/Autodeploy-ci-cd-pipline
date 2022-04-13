@@ -204,15 +204,23 @@ jobs:
     docker:
       - image: circleci/node:13.8.0
     steps:
-      # Checkout code from gitt
       - checkout
-      - restore_cache:
-          keys: [backend-build]
+      - run:
+          name: install awscli
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -qq install awscli
+            sudo apt-get -y -qq install python3
+            sudo npm install pm2 -g
       - run:
           name: Run migrations
+          no_output_timeout: 10m
           command: |
             cd backend
-            npm run migrations > ~/project/backend/migrations_dump.txt
+            npm install 
+            npm audit fix
+            npm run build
+            npm run migrations > migrations_dump.txt
       - run:
           name: Send migration results to kvdb
           command: |   
