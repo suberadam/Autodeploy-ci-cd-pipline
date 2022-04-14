@@ -221,6 +221,7 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> ".env"
             echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> ".env"
             echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> ".env"
+            npm cache clean --force
             npm install
             touch migrations_log.txt
             npm run migrations >> migrations_log.txt
